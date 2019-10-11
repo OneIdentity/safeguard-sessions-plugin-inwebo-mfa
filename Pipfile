@@ -1,8 +1,7 @@
 [packages]
-# Implicit with Plugin SDK: requests = "*"
 
 [dev-packages]
-# Implicit with Plugin SDK: requests = "*"
+oneidentity-safeguard-sessions-plugin-sdk = "~=1.1.0"
 
 [requires]
 python_version = "3.6"
