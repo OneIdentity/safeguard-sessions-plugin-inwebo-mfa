@@ -25,18 +25,18 @@ import pytest
 
 @pytest.fixture
 def client(site_parameters):
-    cert = {'cert': [], 'key': []}
+    cert = {"cert": [], "key": []}
     selector = None
-    for line in site_parameters['client_cert'].splitlines():
-        if '-----BEGIN CERTIFICATE-----' in line:
-            selector = 'cert'
-        elif '-----BEGIN RSA PRIVATE KEY-----' in line:
-            selector = 'key'
+    for line in site_parameters["client_cert"].splitlines():
+        if "-----BEGIN CERTIFICATE-----" in line:
+            selector = "cert"
+        elif "-----BEGIN RSA PRIVATE KEY-----" in line:
+            selector = "key"
         if selector:
             cert[selector].append(line)
 
-    baseurl = 'https://api.myinwebo.com/FS/'
-    service_id = site_parameters['service_id']
+    baseurl = "https://api.myinwebo.com/FS/"
+    service_id = site_parameters["service_id"]
     return InWeboClient(baseurl, service_id, cert)
 
 
@@ -47,5 +47,5 @@ def test_can_authenticate_with_push_notification(client, inwebo_user):
 
 @pytest.mark.interactive
 def test_can_authenticate_with_otp(client, inwebo_user, interactive):
-    otp = interactive.askforinput('Please enter OTP: ')
+    otp = interactive.askforinput("Please enter OTP: ")
     assert client.otp_authenticate(inwebo_user, otp)

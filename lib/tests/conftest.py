@@ -25,12 +25,13 @@ from textwrap import dedent
 
 @pytest.fixture
 def inwebo_user(site_parameters):
-    return site_parameters['username']
+    return site_parameters["username"]
 
 
 @pytest.fixture
 def plugin_config(site_parameters):
-    conf = dedent("""
+    conf = dedent(
+        """
         [inwebo]
         service_id={service_id}
         api_url: https://api.myinwebo.com/FS/
@@ -39,9 +40,10 @@ def plugin_config(site_parameters):
         timeout=25
         http_socket_timeout=20
         rest_poll_interval=0.1
-    """).format(
-        service_id=site_parameters['service_id'],
-        client_cert=''.join([' ' + line for line in site_parameters['client_cert'].splitlines()]),
+    """
+    ).format(
+        service_id=site_parameters["service_id"],
+        client_cert="".join([" " + line for line in site_parameters["client_cert"].splitlines()]),
     )
     print(conf)
     return conf

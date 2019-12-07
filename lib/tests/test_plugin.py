@@ -31,7 +31,9 @@ def plugin(plugin_config):
 
 @pytest.fixture
 def plugin_with_questions(plugin_config):
-    return Plugin(configuration=plugin_config + """
+    return Plugin(
+        configuration=plugin_config
+        + """
 [question_1]
 key=q1
 prompt=First question:
@@ -44,7 +46,8 @@ prompt=Second question:
 [question_3]
 key=q3
 prompt=Third question:
-""")
+"""
+    )
 
 
 @pytest.mark.interactive
@@ -52,12 +55,9 @@ def test_authenticate_using_push(plugin_with_questions, inwebo_user, interactive
     interactive.message("We are expecting a successful inWebo authentication, so please ACCEPT it")
     sc = {}
     ck = {}
-    result = (plugin_with_questions.authenticate(gateway_user=inwebo_user,
-                                                 client_ip="1.2.3.4",
-                                                 key_value_pairs={},
-                                                 cookie=ck,
-                                                 session_cookie=sc,
-                                                 protocol="ssh"))
+    result = plugin_with_questions.authenticate(
+        gateway_user=inwebo_user, client_ip="1.2.3.4", key_value_pairs={}, cookie=ck, session_cookie=sc, protocol="ssh"
+    )
     sc = result["session_cookie"]
     ck = result["cookie"]
 
@@ -69,12 +69,14 @@ def test_authenticate_using_push(plugin_with_questions, inwebo_user, interactive
     assert disable_echo is False
 
     # request push by sending a "" as OTP
-    result = (plugin_with_questions.authenticate(gateway_user=inwebo_user,
-                                                 client_ip="1.2.3.4",
-                                                 key_value_pairs={'otp': ""},
-                                                 session_cookie=sc,
-                                                 cookie=ck,
-                                                 protocol="ssh"))
+    result = plugin_with_questions.authenticate(
+        gateway_user=inwebo_user,
+        client_ip="1.2.3.4",
+        key_value_pairs={"otp": ""},
+        session_cookie=sc,
+        cookie=ck,
+        protocol="ssh",
+    )
     sc = result["session_cookie"]
     ck = result["cookie"]
     # we expect a NEEDINFO with the first question, after authentication succeeds
@@ -85,12 +87,14 @@ def test_authenticate_using_push(plugin_with_questions, inwebo_user, interactive
     assert key == "q1"
     assert "First" in prompt
 
-    result = (plugin_with_questions.authenticate(gateway_user=inwebo_user,
-                                                 client_ip="1.2.3.4",
-                                                 key_value_pairs={'otp': "", "q1": "value1", "q2": "value2"},
-                                                 session_cookie=sc,
-                                                 cookie=ck,
-                                                 protocol="ssh"))
+    result = plugin_with_questions.authenticate(
+        gateway_user=inwebo_user,
+        client_ip="1.2.3.4",
+        key_value_pairs={"otp": "", "q1": "value1", "q2": "value2"},
+        session_cookie=sc,
+        cookie=ck,
+        protocol="ssh",
+    )
     sc = result["session_cookie"]
     ck = result["cookie"]
 
@@ -103,26 +107,30 @@ def test_authenticate_using_push(plugin_with_questions, inwebo_user, interactive
 
     # this should succeed, both the authentication went OK, plus the
     # responses to the questions are also present
-    kvpairs = {'otp': "", "q1": "value1", "q2": "value2", "q3": "value3"}
-    result = (plugin_with_questions.authenticate(gateway_user=inwebo_user,
-                                                 client_ip="1.2.3.4",
-                                                 key_value_pairs=kvpairs,
-                                                 session_cookie=sc,
-                                                 cookie=ck,
-                                                 protocol="ssh"))
+    kvpairs = {"otp": "", "q1": "value1", "q2": "value2", "q3": "value3"}
+    result = plugin_with_questions.authenticate(
+        gateway_user=inwebo_user,
+        client_ip="1.2.3.4",
+        key_value_pairs=kvpairs,
+        session_cookie=sc,
+        cookie=ck,
+        protocol="ssh",
+    )
 
-    assert result['verdict'] == "ACCEPT"
-    assert result['session_cookie']['questions'] == {"q1": "value1", "q2": "value2", "q3": "value3"}
+    assert result["verdict"] == "ACCEPT"
+    assert result["session_cookie"]["questions"] == {"q1": "value1", "q2": "value2", "q3": "value3"}
 
 
 def test_session_cookies_are_propagated_accross_authenticate(plugin):
     sc = {"foo": "bar", "bar": "foo"}
-    result = (plugin.authenticate(gateway_user="whitelisted",
-                                  client_ip="1.2.3.4",
-                                  key_value_pairs={},
-                                  session_cookie=copy.deepcopy(sc),
-                                  cookie={},
-                                  protocol="ssh"))
+    result = plugin.authenticate(
+        gateway_user="whitelisted",
+        client_ip="1.2.3.4",
+        key_value_pairs={},
+        session_cookie=copy.deepcopy(sc),
+        cookie={},
+        protocol="ssh",
+    )
 
-    assert result['verdict'] == "NEEDINFO"
-    assert sc.items() <= result['session_cookie'].items()
+    assert result["verdict"] == "NEEDINFO"
+    assert sc.items() <= result["session_cookie"].items()
