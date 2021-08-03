@@ -133,9 +133,7 @@ class InWeboClient(MFAClient):
         raise MFAAuthenticationFailure(result.get("err") or "Unkown error")
 
     def _query(self, url, params=None):
-        if re.match("^https://", url.lower()):
-            url = url
-        else:
+        if not re.match("^https://", url.lower()):
             url = urllib.parse.urljoin(self.baseuri, url)
         url = url.rstrip("/")
         self.logger.debug("Sending request: %s, params: %s", url, params)
